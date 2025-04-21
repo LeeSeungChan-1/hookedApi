@@ -1,5 +1,6 @@
-package kr.hooked.api.dto;
+package kr.hooked.api.dto.reponse;
 
+import kr.hooked.api.dto.request.PageRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

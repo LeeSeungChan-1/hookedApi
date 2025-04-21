@@ -1,9 +1,6 @@
-package kr.hooked.api.dto;
+package kr.hooked.api.dto.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import kr.hooked.api.entity.Department;
 import kr.hooked.api.entity.Position;
 import lombok.AllArgsConstructor;
@@ -20,8 +17,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class EmployeeRequestDto {
-
-    private Long employeeId; // 사원ID
 
     @NotBlank(message = "사원번호는 필수항목입니다.")
     @Size(min = 8, max = 8, message = "사원번호는 8자리로 입력하셔야합니다.")
@@ -48,10 +43,18 @@ public class EmployeeRequestDto {
     @Builder.Default
     private boolean status = true; // 상태
 
-    private Long departmentId; // 부서id
+//    @NotNull(message = "부서은 필수항목입니다.")
+    private Long departmentId = 1L; // 부서id
 
-    private Long positionId; // 직책id
+    private Department department; // 부서 엔티티
+
+//    @NotNull(message = "직책은 필수항목입니다.")
+    private Long positionId = 1L; // 직책id
+
+    private Position position; // 직책 엔티티
 
     private MultipartFile employeeImage; // 사원사진파일
+
+    private String imageUrl; // 사원 이미지 url
 
 }

@@ -1,4 +1,4 @@
-package kr.hooked.api.dto;
+package kr.hooked.api.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PositionDto {
+public class PositionRequestDto {
     private Long positionId; // 직책ID
 
     @NotBlank(message = "직책번호는 필수항목입니다.")
@@ -23,12 +23,7 @@ public class PositionDto {
     @Builder.Default
     private boolean status = true; // 상태
 
-    public PositionDto(Position position) {
-        this.positionId = position.getPositionId();
-        this.number = position.getNumber();
-        this.name = position.getName();
-        this.status = position.isStatus();
-    }
+
 
 
 }

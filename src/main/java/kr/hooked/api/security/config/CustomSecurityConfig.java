@@ -1,4 +1,4 @@
-package kr.hooked.api.config;
+package kr.hooked.api.security.config;
 
 import kr.hooked.api.security.handler.APILoginFailHandler;
 import kr.hooked.api.security.handler.APILoginSuccessHandler;
@@ -50,8 +50,8 @@ public class CustomSecurityConfig {
         // UsernamePasswordAuthenticationFilter가 동작하기 전에 JWTCheckFilter로 검사
         http.addFilterBefore(new JWTCheckFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        http.exceptionHandling(config -> {
-            config.accessDeniedHandler(new CustomAccessDeniedHandler());
+        http.exceptionHandling(config -> { // 예외 핸들링
+            config.accessDeniedHandler(new CustomAccessDeniedHandler()); // 권한예외 설정
         });
 
         return http.build();

@@ -1,4 +1,4 @@
-package kr.hooked.api.dto;
+package kr.hooked.api.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

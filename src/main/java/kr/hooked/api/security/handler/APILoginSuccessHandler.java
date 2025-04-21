@@ -1,11 +1,11 @@
-package kr.hooked.api.handler;
+package kr.hooked.api.security.handler;
 
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.hooked.api.dto.EmployeeSecurityDto;
-import kr.hooked.api.util.JWTUtil;
+import kr.hooked.api.security.dto.EmployeeSecurityDto;
+import kr.hooked.api.security.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -23,8 +23,8 @@ public class APILoginSuccessHandler implements AuthenticationSuccessHandler {
 
         Map<String, Object> claims = employeeSecurityDto.getClaims();
 
-        String accessToken = JWTUtil.generateToken(claims, 10); // 10분
-        String refreshToken = JWTUtil.generateToken(claims, 60 * 3); // 3시간
+        String accessToken = JWTUtil.generateToken(claims, JWTUtil.defaultAccessTokenExpireMinutes); // 기본 10분
+        String refreshToken = JWTUtil.generateToken(claims, JWTUtil.defaultRefreshTokenExpireMinutes); // 기본 3시간
 
         claims.put("accessToken", accessToken);
         claims.put("refreshToken", refreshToken);

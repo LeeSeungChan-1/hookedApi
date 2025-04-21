@@ -1,123 +1,109 @@
 package kr.hooked.api.util;
 
-
 import jakarta.annotation.PostConstruct;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 
 @Component
-public class SaveFile {
-    public static final String SAVE_IMAGE_URL = "./upload/img/"; // 이미지 파일 저장 경로
-    public static final String SAVE_EMPLOYEE_IMAGE_URL = "./upload/img/employee/"; // 이미지 파일 저장 경로
+@Log4j2
+public class FileUtil {
 
-    private final long EMPLOYEE_IMAGE_SIZE = 500 * 1024; // 사원사진 크기(kb)
-    private final int MIN_WIDTH = 350, MAX_WIDTH = 450, MIN_HEIGHT = 450, MAX_HEIGHT = 550; // 사진 가로 세로 사이즈
+    // 1) 프로젝트 실행 경로(user.dir) 바로 아래 uploads/employee 폴더를 기본 업로드 루트로 설정
+    private static final Path UPLOAD_ROOT =
+            Paths.get(System.getProperty("user.dir"), "uploads").toAbsolutePath().normalize();
+    private static final Path EMPLOYEE_DIR = UPLOAD_ROOT.resolve("employee");
 
-    private final List<String> ALLOWED_TYPE_LIST = Arrays.asList("image/jpg", "image/jpeg", "image/png"); // 이미지 파일 확장자
+    // 2) 유효성 검사용 상수
+    private static final long   MAX_IMAGE_SIZE   = 500 * 1024;    // 500KB
+    private static final int    MIN_WIDTH        = 350;
+    private static final int    MAX_WIDTH        = 450;
+    private static final int    MIN_HEIGHT       = 450;
+    private static final int    MAX_HEIGHT       = 550;
+    private static final List<String> ALLOWED_TYPES =
+            List.of("image/jpg", "image/jpeg", "image/png");
 
+    // 3) 빈 초기화 시 폴더 자동 생성
     @PostConstruct
-    public void init() { //
-        File dir1 = new File(SAVE_IMAGE_URL);
-        if (!dir1.exists()) { // 폴더가 없을 경우 생성
-            dir1.mkdirs();
-        }
-        File dir2 = new File(SAVE_EMPLOYEE_IMAGE_URL);
-        if (!dir2.exists()) { // 폴더가 없을 경우 생성
-            dir2.mkdirs();
-        }
-    }
-
-    public String saveImage(MultipartFile file, String path) throws RuntimeException {
-
-        String saveFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path savePath = Paths.get(path + saveFileName);
-
-        try{
-            Files.copy(file.getInputStream(), savePath);
-        }catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        return saveFileName;
-    }
-
-    public Map<String, String> saveImageCheck(MultipartFile file) {
-        Map<String, String> checkResult = new HashMap<>();
-        if(file.isEmpty()) {
-            return Collections.emptyMap(); // 사진이 없는 경우 패스
-        }
-        List<String> errorMessageList = new ArrayList<>();
-
-        if(!isAllowedType(file)) { // 파일의 확장자가 맞지 않은 경우
-            errorMessageList.add("파일은 " + String.join(", ", ALLOWED_TYPE_LIST) + "확장자만 저장이 가능합니다.");
-        }
-
-        if(!isAllowedFileSize(file)){ // 파일의 사이즈가 큰 경우
-            errorMessageList.add("파일은 " + EMPLOYEE_IMAGE_SIZE/1000 + "KB까지 저장이 가능합니다.");
-        }
-
-        if(!isAllowedImageSize(file)) { // 사진의 가로 세로 사이즈가 맞지 않는 경우
-            errorMessageList.add("파일은 가로:" + MIN_WIDTH + "~" + MAX_WIDTH + ", 세로: " + MIN_HEIGHT + "~" + MAX_HEIGHT + "까지 저장이 가능합니다.");
-        }
-
-        if(!errorMessageList.isEmpty()) { // 에러 메시지가 있을 경우
-            checkResult.put("employeeImage", String.join(", ", errorMessageList));
-        }
-
-        return checkResult;
-    }
-
-    private boolean isAllowedType(MultipartFile file) { // 파일의 이름을 통해 확장자를 검사
-        String mimeType = file.getContentType();
-        if (mimeType == null) {
-            return false;
-        }
-        boolean allowed = false; // 타입 검사용
-        for (String allowedType : ALLOWED_TYPE_LIST) {
-            if (mimeType.equalsIgnoreCase(allowedType)) {
-                allowed = true;
-                break;
-            }
-        }
-        if (!allowed) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isAllowedFileSize(MultipartFile file) { // 파일 크기 확인
-        if(file.getSize() > EMPLOYEE_IMAGE_SIZE) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isAllowedImageSize(MultipartFile file) { // 이미지의 가로 세로 사이즈 확인
+    public void init() {
         try {
-            InputStream inputStream = file.getInputStream();
-            BufferedImage image = ImageIO.read(inputStream);
-            if (image == null) {
-                return false;
-            }
-            int width = image.getWidth();
-            int height = image.getHeight();
+            Files.createDirectories(EMPLOYEE_DIR);
+            log.info("Upload dirs ready: {}", EMPLOYEE_DIR);
+        } catch (IOException e) {
+            log.error("업로드 디렉터리 생성 실패", e);
+            throw new RuntimeException("Could not create upload directories", e);
+        }
+    }
 
-            if (width < MIN_WIDTH || width > MAX_WIDTH || height < MIN_HEIGHT || height > MAX_HEIGHT) {
-                return false;
+    /** 직원 이미지 저장 → 파일명 리턴 */
+    public String saveEmployeeImage(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("파일이 비어 있습니다");
+        }
+        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path target = EMPLOYEE_DIR.resolve(filename);
+        try {
+            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+            log.info("Saved image: {}", target);
+            return filename;
+        } catch (IOException e) {
+            log.error("이미지 저장 실패: {}", filename, e);
+            throw new RuntimeException("파일 저장에 실패했습니다", e);
+        }
+    }
+
+    /** 저장된 파일명을 주면 Base64 data URL 반환 */
+    public static String imageToBase64(String filename) {
+        if (filename == null || filename.isEmpty()) return "";
+        Path path = EMPLOYEE_DIR.resolve(filename).normalize();
+        if (!Files.exists(path)) {
+            log.warn("이미지 파일 없음: {}", path);
+            return "";
+        }
+        try {
+            byte[] bytes = Files.readAllBytes(path);
+            String contentType = Optional.ofNullable(Files.probeContentType(path))
+                    .orElse("image/png");
+            String base64 = Base64.getEncoder().encodeToString(bytes);
+            return "data:" + contentType + ";base64," + base64;
+        } catch (IOException e) {
+            log.error("Base64 인코딩 실패: {}", path, e);
+            return "";
+        }
+    }
+
+    /** 간단 유효성 검사 */
+    public Map<String,String> validateEmployeeImage(MultipartFile file) {
+        if (file == null || file.isEmpty()) return Collections.emptyMap();
+        List<String> errs = new ArrayList<>();
+
+        String type = Optional.ofNullable(file.getContentType()).orElse("");
+        if (!ALLOWED_TYPES.contains(type)) {
+            errs.add("허용 확장자: " + String.join(", ", ALLOWED_TYPES));
+        }
+        if (file.getSize() > MAX_IMAGE_SIZE) {
+            errs.add("파일 크기 최대 " + (MAX_IMAGE_SIZE/1024) + "KB");
+        }
+        try {
+            BufferedImage img = ImageIO.read(file.getInputStream());
+            if (img == null ||
+                    img.getWidth()  < MIN_WIDTH  || img.getWidth()  > MAX_WIDTH ||
+                    img.getHeight() < MIN_HEIGHT || img.getHeight() > MAX_HEIGHT) {
+                errs.add(String.format("가로 %d~%d, 세로 %d~%d 권장",
+                        MIN_WIDTH,MAX_WIDTH,MIN_HEIGHT,MAX_HEIGHT));
             }
         } catch (IOException e) {
-            return false;
+            errs.add("이미지 읽기 오류");
         }
-        return true;
+
+        return errs.isEmpty()
+                ? Collections.emptyMap()
+                : Collections.singletonMap("employeeImage", String.join(", ", errs));
     }
 }

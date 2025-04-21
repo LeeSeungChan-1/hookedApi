@@ -1,7 +1,7 @@
-package kr.hooked.api.security;
+package kr.hooked.api.security.service;
 
 import jakarta.transaction.Transactional;
-import kr.hooked.api.dto.EmployeeSecurityDto;
+import kr.hooked.api.security.dto.EmployeeSecurityDto;
 import kr.hooked.api.entity.Employee;
 import kr.hooked.api.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +32,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                 new EmployeeSecurityDto(
                         employee.getNumber(),
                         employee.getPassword(),
+                        employee.getName(),
+                        employee.getDepartment() == null ? "" : employee.getDepartment().getName(), // 부서가 없으면 ""
+                        employee.getPosition() == null ? "" : employee.getPosition().getName(), // 직책이 없으면 ""
                         employee.getEmployeeAuthorityList().stream()// 권한명만 순서대로 출력
                                 .map(ea -> ea.getAuthority().getName())
                                 .collect(Collectors.toList()));

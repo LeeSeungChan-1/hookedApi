@@ -1,4 +1,4 @@
-package kr.hooked.api.dto;
+package kr.hooked.api.dto.reponse;
 
 import kr.hooked.api.entity.Employee;
 import lombok.AllArgsConstructor;

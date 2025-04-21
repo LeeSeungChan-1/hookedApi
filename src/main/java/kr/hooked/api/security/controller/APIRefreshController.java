@@ -1,10 +1,14 @@
-package kr.hooked.api.controller;
+package kr.hooked.api.security.controller;
 
-import kr.hooked.api.util.CustomJWTException;
+import jakarta.validation.Valid;
+import kr.hooked.api.security.dto.TokenDto;
+import kr.hooked.api.security.service.APIRefreshService;
+import kr.hooked.api.util.ValidCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -14,25 +18,22 @@ import java.util.Map;
 @Log4j2
 public class APIRefreshController {
 
-    @PostMapping("/api/empoyee/refresh")
-    public Map<String, Object> refreshAccessToken(@RequestHeader("Authorization") String authorization, String refreshToken) {
+    private final APIRefreshService apiRefreshService;
 
-        if(refreshToken == null || refreshToken.isEmpty()) {
-            throw new CustomJWTException("NULL_REFRESH_TOKEN");
+    @PostMapping("/api/token/refresh")
+    public ResponseEntity<?> refreshAccessToken(@Valid TokenDto tokenDto, BindingResult bindingResult) {
+        Map<String, String> validResult = ValidCheck.validCheck(bindingResult); // 입력값 검증
+
+        if(!validResult.isEmpty()) { // 입력값에 문제가 있을 경우
+            return ResponseEntity.badRequest().body(validResult);
         }
 
-        if(authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new CustomJWTException("INVALID_AUTHORIZATION");
-        }
+        Map<String, String> result = apiRefreshService.refreshAccessToken(tokenDto);
 
-        String accessToken = authorization.substring(7);
+        return ResponseEntity.ok(result);
 
-
-
-
-
-
-        return null;
     }
 
 }
+
+

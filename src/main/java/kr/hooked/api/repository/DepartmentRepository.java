@@ -1,4 +1,7 @@
 package kr.hooked.api.repository;
 
-public interface DepartmentRepository {
+import kr.hooked.api.entity.Department;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface DepartmentRepository extends JpaRepository<Department, Long> {
 }
