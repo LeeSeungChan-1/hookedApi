@@ -81,6 +81,7 @@ public class EmployeeRepositoryTests {
         employee.setDepartment(department);
         employee.setPosition(position);
 
+
         Employee result = employeeRepository.save(employee);
         log.info(result);
     }

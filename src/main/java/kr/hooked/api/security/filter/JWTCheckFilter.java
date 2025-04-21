@@ -24,7 +24,6 @@ public class JWTCheckFilter extends OncePerRequestFilter { // OncePerRequestFilt
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException { // 검사하지 않는 경우
         // false : 검사 o // true : 검사 x
-
         if(request.getMethod().equals("OPTIONS")){// Preflight요청은 체크하지 않음
             return true;
         }
@@ -38,8 +37,6 @@ public class JWTCheckFilter extends OncePerRequestFilter { // OncePerRequestFilt
         if(path.startsWith("/api/token/refresh")) { // 토큰 재발급 호출은 체크하지 않음
             return true;
         }
-
-
 
         return false;
     }
@@ -81,7 +78,5 @@ public class JWTCheckFilter extends OncePerRequestFilter { // OncePerRequestFilt
             printWriter.println(message);
             printWriter.close();
         }
-
-
     }
 }
