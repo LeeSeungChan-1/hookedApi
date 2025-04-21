@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import kr.hooked.api.dto.reponse.EmployeeResponseDto;
 import kr.hooked.api.dto.reponse.PageResponseDto;
 import kr.hooked.api.dto.request.EmployeeRequestDto;
+import kr.hooked.api.dto.request.EmployeeUpdateRequestDto;
 import kr.hooked.api.dto.request.PageRequestDto;
 import kr.hooked.api.dto.request.PasswordRequestDto;
 import kr.hooked.api.service.EmployeeService;
@@ -51,10 +52,20 @@ public class EmployeeController {
     }
 
     @PreAuthorize("hasAnyRole('ROLE_dvAll')")
-    @GetMapping("/read/{employeeId}")
+    @GetMapping("/{employeeId}")
     public ResponseEntity<?> select(@PathVariable long employeeId) {
 
         EmployeeResponseDto result = employeeService.select(employeeId);
+        return ResponseEntity.ok(result);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_dvAll')")
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@Valid EmployeeUpdateRequestDto employeeUpdateRequestDto, @PathVariable Long id) {
+        employeeUpdateRequestDto.setId(id);
+
+        EmployeeResponseDto result = employeeService.update(employeeUpdateRequestDto);
+
         return ResponseEntity.ok(result);
     }
 

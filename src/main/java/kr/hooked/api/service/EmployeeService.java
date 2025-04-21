@@ -5,6 +5,7 @@ import kr.hooked.api.dto.reponse.EmployeeResponseDto;
 import kr.hooked.api.dto.reponse.PageResponseDto;
 import kr.hooked.api.dto.reponse.PasswordResponseDto;
 import kr.hooked.api.dto.request.EmployeeRequestDto;
+import kr.hooked.api.dto.request.EmployeeUpdateRequestDto;
 import kr.hooked.api.dto.request.PageRequestDto;
 import kr.hooked.api.dto.request.PasswordRequestDto;
 import kr.hooked.api.security.config.CustomSecurityConfig;
@@ -78,15 +79,15 @@ public class EmployeeService implements EmployeeServiceInterface {
 
         Page<Employee> employeePage = employeeRepository.findAll(pageable);
 
-        List<EmployeeResponseDto> EmployeeResponseDtoList = employeePage.getContent().stream().map(EmployeeResponseDto::toDto).toList();
+        List<EmployeeResponseDto> employeeResponseDtoList = employeePage.getContent().stream().map(EmployeeResponseDto::toDto).toList();
 
-        PageResponseDto<EmployeeResponseDto> result = new PageResponseDto<>(employeePage, EmployeeResponseDtoList, pageRequestDto);
+        PageResponseDto<EmployeeResponseDto> result = new PageResponseDto<>(employeePage, employeeResponseDtoList, pageRequestDto);
 
         return result;
     }
 
     public EmployeeResponseDto updatePassword(PasswordRequestDto passwordRequestDto, UserDetails userDetails) {
-        if(!Objects.equals(userDetails.getUsername(), passwordRequestDto.getNumber())){
+        if(!userDetails.getUsername().equals(passwordRequestDto.getNumber())){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "아이디가 서로 같지 않습니다.");
         }
         Employee employee = employeeRepository.findByNumber(passwordRequestDto.getNumber())
@@ -104,5 +105,34 @@ public class EmployeeService implements EmployeeServiceInterface {
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사원 정보가 존재하지 않습니다."));
         return EmployeeResponseDto.toDto(employee);
+    }
+
+    @Override
+    public EmployeeResponseDto update(EmployeeUpdateRequestDto employeeUpdateRequestDto) {
+        Employee prevEmployee = employeeRepository.findById(employeeUpdateRequestDto.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사원 정보가 존재하지 않습니다."));
+
+        if(!prevEmployee.getEmail().equals(employeeUpdateRequestDto.getEmail()) && employeeRepository.existsByEmail(employeeUpdateRequestDto.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일이 중복되었습니다.");
+        }
+        if(!prevEmployee.getPhoneNumber().equals(employeeUpdateRequestDto.getPhoneNumber()) && employeeRepository.existsByPhoneNumber(employeeUpdateRequestDto.getPhoneNumber())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "전화번호가 중복되었습니다.");
+        }
+
+        Department department = departmentRepository.findById(employeeUpdateRequestDto.getDepartmentId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "부서 정보가 존재하지 않습니다."));
+
+        Position position = positionRepository.findById(employeeUpdateRequestDto.getPositionId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "직책 정보가 존재하지 않습니다."));
+
+        // 추가 데이터 준비
+        String imageUrl = fileUtil.saveEmployeeImage(employeeUpdateRequestDto.getEmployeeImage()); // 이미지 파일이 있으면 url 반환 아니면 null
+
+        Employee employee = prevEmployee.setUpdateValue(employeeUpdateRequestDto, imageUrl, department, position);
+
+        // 엔티티 저장 및 반환
+        Employee result = employeeRepository.save(employee);
+        return EmployeeResponseDto.toDto(result);
+
     }
 }

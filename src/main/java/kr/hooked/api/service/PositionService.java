@@ -44,17 +44,17 @@ public class PositionService implements PositionServiceInterface {
     }
 
     public PositionResponseDto update(PositionRequestDto positionRequestDto) {
-        if(positionRepository.existsByNumber(positionRequestDto.getNumber())) {
+        Position prevPosition = positionRepository.findById(positionRequestDto.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "직책 정보가 존재하지 않습니다."));
+
+        if(!prevPosition.getNumber().equals(positionRequestDto.getNumber()) && positionRepository.existsByNumber(positionRequestDto.getNumber())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "직책 번호가 중복되었습니다.");
         }
-        if(positionRepository.existsByName(positionRequestDto.getName())) {
+        if(!prevPosition.getName().equals(positionRequestDto.getName()) && positionRepository.existsByName(positionRequestDto.getName())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "직책 명이 중복되었습니다.");
         }
 
-        Position position = positionRepository.findById(positionRequestDto.getPositionId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "직책 정보가 존재하지 않습니다."));
-
-        position.setUpdateValue(positionRequestDto); // 수정사항 입력
+        Position position = prevPosition.setUpdateValue(positionRequestDto); // 수정사항 입력
 
         Position result = positionRepository.save(position); // 수정
 

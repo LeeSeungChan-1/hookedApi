@@ -51,10 +51,9 @@ public class PositionController {
     @PreAuthorize("hasAnyRole('ROLE_dvAll')")
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@RequestBody @Valid PositionRequestDto positionRequestDto, @PathVariable Long id) {
-        positionRequestDto.setPositionId(id);
+        positionRequestDto.setId(id);
         PositionResponseDto result = positionService.update(positionRequestDto);
 
         return ResponseEntity.ok(result);
     }
-
 }

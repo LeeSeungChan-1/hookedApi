@@ -15,15 +15,12 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class EmployeeRequestDto {
+public class EmployeeUpdateRequestDto {
+    private Long id; // 사원 id
+
     @NotBlank(message = "사원번호는 필수항목입니다.")
     @Size(min = 8, max = 8, message = "사원번호는 8자리로 입력하셔야합니다.")
     private String number; // 사원번호
-
-    @NotBlank(message = "비밀번호는 필수항목입니다.")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,20}$",
-            message = "비밀번호는 영어, 숫자, 특수문자(@, $, !, %, *, ?, &)를 포함한 8~20자리로 입력하셔야합니다.")
-    private String password; // 비밀번호
 
     @NotBlank(message = "이름은 필수항목입니다.")
     @Size(min = 2, max = 10, message = "이름은 2~10자리로 입력하셔야합니다.")

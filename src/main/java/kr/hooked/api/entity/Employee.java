@@ -3,6 +3,7 @@ package kr.hooked.api.entity;
 import jakarta.persistence.*;
 
 import kr.hooked.api.dto.request.EmployeeRequestDto;
+import kr.hooked.api.dto.request.EmployeeUpdateRequestDto;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -60,6 +61,19 @@ public class Employee {
 
     public Employee setUpdatePassword(String password) {
         this.password = password;
+        return this;
+    }
+
+    public Employee setUpdateValue(EmployeeUpdateRequestDto employeeUpdateRequestDto, String imageUrl, Department department, Position position) {
+        this.number = employeeUpdateRequestDto.getNumber();
+        this.name = employeeUpdateRequestDto.getName();
+        this.email = employeeUpdateRequestDto.getEmail();
+        this.phoneNumber = employeeUpdateRequestDto.getPhoneNumber();
+        this.hireDate = employeeUpdateRequestDto.getHireDate();
+        this.status = employeeUpdateRequestDto.isStatus();
+        this.imageUrl = imageUrl;
+        this.department = department;
+        this.position = position;
         return this;
     }
 

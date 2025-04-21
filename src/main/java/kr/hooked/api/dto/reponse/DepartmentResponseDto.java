@@ -1,14 +1,7 @@
 package kr.hooked.api.dto.reponse;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
 import kr.hooked.api.entity.Department;
-import kr.hooked.api.entity.Employee;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @NoArgsConstructor

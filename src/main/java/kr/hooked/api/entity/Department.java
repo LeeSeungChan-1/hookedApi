@@ -1,6 +1,7 @@
 package kr.hooked.api.entity;
 
 import jakarta.persistence.*;
+import kr.hooked.api.dto.request.DepartmentRequestDto;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -31,4 +32,19 @@ public class Department {
 
     @Builder.Default
     private List<Employee> employeeList = new ArrayList<>(); // 사원
+
+    public static Department of(DepartmentRequestDto departmentRequestDto) {
+        return Department.builder()
+                .number(departmentRequestDto.getNumber())
+                .name(departmentRequestDto.getName())
+                .status(true)
+                .build();
+    }
+
+    public Department setUpdateValue(DepartmentRequestDto departmentRequestDto) {
+        this.number = departmentRequestDto.getNumber();
+        this.name = departmentRequestDto.getName();
+        this.status = departmentRequestDto.isStatus();
+        return this;
+    }
 }
