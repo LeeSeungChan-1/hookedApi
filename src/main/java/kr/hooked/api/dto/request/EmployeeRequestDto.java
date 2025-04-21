@@ -15,7 +15,6 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class EmployeeRequestDto {
 
     @NotBlank(message = "사원번호는 필수항목입니다.")
@@ -40,15 +39,14 @@ public class EmployeeRequestDto {
 
     private LocalDate hireDate; // 입사일
 
-    @Builder.Default
     private boolean status = true; // 상태
 
-//    @NotNull(message = "부서은 필수항목입니다.")
+    @NotNull(message = "부서은 필수항목입니다.")
     private Long departmentId = 1L; // 부서id
 
     private Department department; // 부서 엔티티
 
-//    @NotNull(message = "직책은 필수항목입니다.")
+    @NotNull(message = "직책은 필수항목입니다.")
     private Long positionId = 1L; // 직책id
 
     private Position position; // 직책 엔티티

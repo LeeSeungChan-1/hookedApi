@@ -32,7 +32,7 @@ public class Position {
     @Builder.Default
     private List<Employee> employeeList = new ArrayList<>(); // 사원
 
-    public static Position toEntity(PositionRequestDto positionRequestDto) {
+    public static Position of(PositionRequestDto positionRequestDto) {
         return Position.builder()
                 .number(positionRequestDto.getNumber())
                 .name(positionRequestDto.getName())

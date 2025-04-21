@@ -22,7 +22,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 
@@ -36,27 +39,34 @@ public class EmployeeService implements EmployeeServiceInterface {
     private final CustomSecurityConfig customSecurityConfig;
     private final FileUtil fileUtil;
 
-    private final String SELECT_EMPLOYEE_ERROR = "사원을 찾을 수 없습니다.";
-    private final String INSERT_NUMBER_ERROR = "이미 등록된 사원번호입니다.";
-    private final String INSERT_EMAIL_ERROR = "이미 등록된 이메일입니다.";
-    private final String INSERT_PHONENUMBER_ERROR = "이미 등록된 전화번호입니다.";
-    private final String PASSWORD_NOT_EQUAL = "비밀번호를 확인해주세요.";
-
     @Transactional
     public EmployeeResponseDto insert(EmployeeRequestDto employeeRequestDto) {
-        Department department = departmentRepository.findById(employeeRequestDto.getDepartmentId()).get();
+        // 중복 검사
+        if(employeeRepository.existsByNumber(employeeRequestDto.getNumber())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "사원번호가 중복되었습니다.");
+        }
+        if(employeeRepository.existsByEmail(employeeRequestDto.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일이 중복되었습니다.");
+        }
+        if(employeeRepository.existsByPhoneNumber(employeeRequestDto.getPhoneNumber())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "전화번호가 중복되었습니다.");
+        }
+        // 엔티티 조회
+        Department department = departmentRepository.findById(employeeRequestDto.getDepartmentId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "부서 정보가 존재하지 않습니다."));
 
-        Position position = positionRepository.findById(employeeRequestDto.getPositionId()).get();
+        Position position = positionRepository.findById(employeeRequestDto.getPositionId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "직책 정보가 존재하지 않습니다."));
 
+        // 추가 데이터 준비
         String imageUrl = fileUtil.saveEmployeeImage(employeeRequestDto.getEmployeeImage()); // 이미지 파일이 있으면 url 반환 아니면 null
+        String encodedPassword = customSecurityConfig.passwordEncoder().encode(employeeRequestDto.getPassword());
 
-        employeeRequestDto.setPassword(customSecurityConfig.passwordEncoder().encode(employeeRequestDto.getPassword()));
-        employeeRequestDto.setDepartment(department);
-        employeeRequestDto.setPosition(position);
-        employeeRequestDto.setImageUrl(imageUrl);
+        // 엔티티 생성
+        Employee employee = Employee.of(employeeRequestDto, department, position, encodedPassword, imageUrl);
 
-        Employee result = employeeRepository.save(Employee.toEntity(employeeRequestDto));
-
+        // 엔티티 저장 및 반환
+        Employee result = employeeRepository.save(employee);
         return EmployeeResponseDto.toDto(result);
     }
 
@@ -75,8 +85,12 @@ public class EmployeeService implements EmployeeServiceInterface {
         return result;
     }
 
-    public EmployeeResponseDto updatePassword(PasswordRequestDto passwordRequestDto) {
-        Employee employee = employeeRepository.findByNumber(passwordRequestDto.getNumber()); // 사원번호로 가져오기
+    public EmployeeResponseDto updatePassword(PasswordRequestDto passwordRequestDto, UserDetails userDetails) {
+        if(!Objects.equals(userDetails.getUsername(), passwordRequestDto.getNumber())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "아이디가 서로 같지 않습니다.");
+        }
+        Employee employee = employeeRepository.findByNumber(passwordRequestDto.getNumber())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사원 정보가 존재하지 않습니다."));
 
         employee.setUpdatePassword(customSecurityConfig.passwordEncoder().encode(passwordRequestDto.getNewPassword())); // 비밀번호 설정
 
@@ -87,42 +101,8 @@ public class EmployeeService implements EmployeeServiceInterface {
 
 
     public EmployeeResponseDto select(long employeeId) {
-        Employee employee = employeeRepository.findById(employeeId).get();
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사원 정보가 존재하지 않습니다."));
         return EmployeeResponseDto.toDto(employee);
-    }
-
-
-    public Map<String, String> duplicationCheck(EmployeeRequestDto employeeRequestDto) { // 저장전 유니크 항목 검사
-        // id 제외 유니크 값 사원번호(number), 이메일(email), 전화번호(phoneNumber)
-        Map<String, String> errorMap = new HashMap<>();
-        if(employeeRepository.existsByNumber(employeeRequestDto.getNumber())){ // 사원번호로 조회 시 값이 있을 경우
-            errorMap.put("number", INSERT_NUMBER_ERROR);
-        }
-        if(employeeRepository.existsByEmail(employeeRequestDto.getEmail())){ // 이메일로 조회 시 값이 있을 경우
-            errorMap.put("email", INSERT_EMAIL_ERROR);
-        }
-        if(employeeRepository.existsByPhoneNumber(employeeRequestDto.getPhoneNumber())){ // 전화번호 조회 시 값이 있을 경우
-            errorMap.put("phoneNumber", INSERT_PHONENUMBER_ERROR);
-        }
-
-        return errorMap;
-    }
-
-    public Map<String, String> passwordCheck(PasswordRequestDto passwordRequestDto) {
-        if(!customSecurityConfig.passwordEncoder()
-                .matches(
-                        passwordRequestDto.getPassword(), // 입력된 비밀번호
-                        employeeRepository.findByNumber(passwordRequestDto.getNumber()).getPassword())){ // 사번으로 조회한 비밀번호
-            return Map.of("error", PASSWORD_NOT_EQUAL); // 다르면 에러
-        }
-        return Collections.emptyMap();
-    }
-
-    @Override
-    public Map<String, String> existsById(Long id) {
-        if(!employeeRepository.existsById(id)){
-            return Map.of("error", SELECT_EMPLOYEE_ERROR);
-        }
-        return Collections.emptyMap();
     }
 }

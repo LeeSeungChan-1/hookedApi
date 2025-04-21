@@ -1,6 +1,7 @@
 package kr.hooked.api.advice;
 
 import kr.hooked.api.security.util.CustomJWTException;
+import kr.hooked.api.util.ValidCheck;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +20,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
     }
 //    // @valid 검증에 실패 했을 때
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException e) {
-//        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(Map.of("message", e.getMessage()));
-//    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        Map<String, String> errors = ValidCheck.validCheck(e.getBindingResult()); // @Valid 를 통한 입력값 검증
+        return ResponseEntity.badRequest().body(errors);
+    }
     //
 //    @ExceptionHandler(ResponseStatusException.class)
 //    public ResponseEntity<?> responseStatusException(ResponseStatusException e) {

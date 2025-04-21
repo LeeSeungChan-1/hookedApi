@@ -15,6 +15,4 @@ public interface PositionServiceInterface {
     PositionResponseDto update(PositionRequestDto positionRequestDto);
     void delete(Long positionId);
     PageResponseDto<PositionResponseDto> selectAll(PageRequestDto pageRequestDto);
-    Map<String, String> existsById(Long id);
-    Map<String, String> duplicationCheck(PositionRequestDto positionRequestDto);
 }

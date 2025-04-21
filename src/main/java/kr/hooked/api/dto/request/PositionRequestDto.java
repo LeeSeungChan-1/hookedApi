@@ -8,7 +8,6 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class PositionRequestDto {
     private Long positionId; // 직책ID
 
@@ -20,10 +19,6 @@ public class PositionRequestDto {
     @Size(min = 3, max = 10, message = "직책명은 3~10자리로 입력하셔야합니다.")
     private String name; // 직책명
 
-    @Builder.Default
     private boolean status = true; // 상태
-
-
-
 
 }

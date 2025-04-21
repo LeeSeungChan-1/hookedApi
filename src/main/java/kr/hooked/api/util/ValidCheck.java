@@ -11,12 +11,6 @@ import java.util.stream.Collectors;
 public class ValidCheck {
 
     public static Map<String, String> validCheck(BindingResult bindingResult) { // 입력된 값 검증
-
-        if (!bindingResult.hasErrors()) {
-            log.info(bindingResult);
-            return Collections.emptyMap();
-        }
-
         // 우선순위를 지정할 맵 : 낮은 숫자가 높은 우선순위
         Map<String, Integer> priorityMap = new HashMap<>();
         // 만약 NotBlank나 NotEmpty 에러가 발생하면 가장 먼저 표시함.

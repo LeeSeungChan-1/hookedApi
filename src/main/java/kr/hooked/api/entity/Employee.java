@@ -63,19 +63,19 @@ public class Employee {
         return this;
     }
 
-    public static Employee toEntity(EmployeeRequestDto employeeRequestDto) {
+    public static Employee of(EmployeeRequestDto employeeRequestDto, Department department, Position position, String encodedPassword, String imageUrl) {
         return Employee
                 .builder()
                 .number(employeeRequestDto.getNumber())
-                .password(employeeRequestDto.getPassword())
+                .password(encodedPassword)
                 .name(employeeRequestDto.getName())
                 .email(employeeRequestDto.getEmail())
                 .phoneNumber(employeeRequestDto.getPhoneNumber())
                 .hireDate(employeeRequestDto.getHireDate())
-                .department(employeeRequestDto.getDepartment())
-                .position(employeeRequestDto.getPosition())
+                .department(department)
+                .position(position)
                 .status(employeeRequestDto.isStatus())
-                .imageUrl(employeeRequestDto.getImageUrl())
+                .imageUrl(imageUrl)
                 .build();
     }
 
