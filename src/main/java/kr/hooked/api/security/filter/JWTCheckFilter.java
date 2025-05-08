@@ -34,6 +34,10 @@ public class JWTCheckFilter extends OncePerRequestFilter { // OncePerRequestFilt
             return true;
         }
 
+        if(path.startsWith("/api/employee/")) { // 회원가입 경로의 호출은 체크하지 않음
+            return true;
+        }
+
         if(path.startsWith("/api/token/refresh")) { // 토큰 재발급 호출은 체크하지 않음
             return true;
         }
