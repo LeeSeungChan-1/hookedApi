@@ -28,7 +28,7 @@ public class DepartmentService implements DepartmentInterface {
     @Override
     public DepartmentResponseDto findById(Long id) {
         Department department = departmentRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "부서 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "부서 정보가 존재하지 않습니다."));
         return DepartmentResponseDto.toDto(department);
     }
 
@@ -66,7 +66,7 @@ public class DepartmentService implements DepartmentInterface {
     @Override
     public DepartmentResponseDto update(DepartmentRequestDto departmentRequestDto) {
         Department prevDepartment = departmentRepository.findById(departmentRequestDto.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "부서 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "부서 정보가 존재하지 않습니다."));
         if(!prevDepartment.getNumber().equals(departmentRequestDto.getNumber()) && departmentRepository.existsByNumber(departmentRequestDto.getNumber())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "부서번호가 중복되었습니다.");
         }

@@ -53,10 +53,10 @@ public class EmployeeService implements EmployeeServiceInterface {
         }
         // 엔티티 조회
         Department department = departmentRepository.findById(employeeRequestDto.getDepartmentId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "부서 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "부서 정보가 존재하지 않습니다."));
 
         Position position = positionRepository.findById(employeeRequestDto.getPositionId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "직책 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "직책 정보가 존재하지 않습니다."));
 
         // 추가 데이터 준비
         String imageUrl = fileUtil.saveEmployeeImage(employeeRequestDto.getEmployeeImage()); // 이미지 파일이 있으면 url 반환 아니면 null
@@ -90,7 +90,7 @@ public class EmployeeService implements EmployeeServiceInterface {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "아이디가 서로 같지 않습니다.");
         }
         Employee employee = employeeRepository.findByNumber(passwordRequestDto.getNumber())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사원 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사원 정보가 존재하지 않습니다."));
 
         employee.setUpdatePassword(customSecurityConfig.passwordEncoder().encode(passwordRequestDto.getNewPassword())); // 비밀번호 설정
 
@@ -102,14 +102,14 @@ public class EmployeeService implements EmployeeServiceInterface {
 
     public EmployeeResponseDto select(long employeeId) {
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사원 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사원 정보가 존재하지 않습니다."));
         return EmployeeResponseDto.toDto(employee);
     }
 
     @Override
     public EmployeeResponseDto update(EmployeeUpdateRequestDto employeeUpdateRequestDto) {
         Employee prevEmployee = employeeRepository.findById(employeeUpdateRequestDto.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "사원 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "사원 정보가 존재하지 않습니다."));
 
         if(!prevEmployee.getEmail().equals(employeeUpdateRequestDto.getEmail()) && employeeRepository.existsByEmail(employeeUpdateRequestDto.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일이 중복되었습니다.");
@@ -119,10 +119,10 @@ public class EmployeeService implements EmployeeServiceInterface {
         }
 
         Department department = departmentRepository.findById(employeeUpdateRequestDto.getDepartmentId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "부서 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "부서 정보가 존재하지 않습니다."));
 
         Position position = positionRepository.findById(employeeUpdateRequestDto.getPositionId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "직책 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "직책 정보가 존재하지 않습니다."));
 
         // 추가 데이터 준비
         String imageUrl = fileUtil.saveEmployeeImage(employeeUpdateRequestDto.getEmployeeImage()); // 이미지 파일이 있으면 url 반환 아니면 null

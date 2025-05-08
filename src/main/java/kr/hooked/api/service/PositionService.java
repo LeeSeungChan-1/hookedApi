@@ -38,14 +38,14 @@ public class PositionService implements PositionServiceInterface {
 
     public PositionResponseDto select(Long positionId) {
         Position result = positionRepository.findById(positionId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "직책 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "직책 정보가 존재하지 않습니다."));
 
         return PositionResponseDto.toDto(result);
     }
 
     public PositionResponseDto update(PositionRequestDto positionRequestDto) {
         Position prevPosition = positionRepository.findById(positionRequestDto.getId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "직책 정보가 존재하지 않습니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "직책 정보가 존재하지 않습니다."));
 
         if(!prevPosition.getNumber().equals(positionRequestDto.getNumber()) && positionRepository.existsByNumber(positionRequestDto.getNumber())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "직책 번호가 중복되었습니다.");
