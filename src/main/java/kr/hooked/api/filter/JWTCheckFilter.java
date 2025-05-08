@@ -28,16 +28,16 @@ public class JWTCheckFilter extends OncePerRequestFilter { // OncePerRequestFilt
 //            return true;
 //        }
 //
-        String path = request.getRequestURI(); // 요청 경로 가져오기
+//        String path = request.getRequestURI(); // 요청 경로 가져오기
 //
 //        if(path.startsWith("/api/employee/login")) { // 로그인 경로의 호출은 체크하지 않음
 //            return true;
 //        }
 //
-        if(path.startsWith("/api/employee/")) { // 회원가입 경로의 호출은 체크하지 않음
-            log.info(path);
-            return true;
-        }
+//        if(path.startsWith("/api/employee/")) { // 회원가입 경로의 호출은 체크하지 않음
+//            log.info(path);
+//            return true;
+//        }
 //
 //        if(path.startsWith("/api/token/refresh")) { // 토큰 재발급 호출은 체크하지 않음
 //            return true;
@@ -47,7 +47,8 @@ public class JWTCheckFilter extends OncePerRequestFilter { // OncePerRequestFilt
 //            return true;
 //        }
 
-        return false;
+        return true;
+//        return false;
     }
 
     @Override
