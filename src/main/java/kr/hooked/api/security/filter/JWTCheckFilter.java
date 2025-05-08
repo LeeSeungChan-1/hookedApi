@@ -38,6 +38,10 @@ public class JWTCheckFilter extends OncePerRequestFilter { // OncePerRequestFilt
             return true;
         }
 
+        if(path.startsWith("/actuator")) { // 상태 검사 주소는 체크하지 않음
+            return true;
+        }
+
         return false;
     }
 
