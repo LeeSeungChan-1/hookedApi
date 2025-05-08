@@ -50,7 +50,7 @@ public class CustomSecurityConfig {
                 .requestMatchers(
                         "/error",
                         "/api/employee/login",
-                        "/api/employee/",
+                        "/api/employee",
                         "/api/token/refresh",
                         "/actuator/health",
                         "/swagger-ui/**", // Swagger UI 정적 리소스(HTML, JS, CSS 등)가 매핑되는 경로
