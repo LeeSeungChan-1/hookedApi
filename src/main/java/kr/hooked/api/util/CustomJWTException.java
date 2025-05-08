@@ -1,4 +1,4 @@
-package kr.hooked.api.security.util;
+package kr.hooked.api.util;
 
 public class CustomJWTException extends RuntimeException {
 

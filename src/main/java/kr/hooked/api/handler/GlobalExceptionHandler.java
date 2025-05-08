@@ -1,6 +1,6 @@
-package kr.hooked.api.advice;
+package kr.hooked.api.handler;
 
-import kr.hooked.api.security.util.CustomJWTException;
+import kr.hooked.api.util.CustomJWTException;
 import kr.hooked.api.util.ValidCheck;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

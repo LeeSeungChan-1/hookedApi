@@ -1,4 +1,4 @@
-package kr.hooked.api.security.dto;
+package kr.hooked.api.dto;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

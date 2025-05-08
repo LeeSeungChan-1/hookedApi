@@ -1,8 +1,8 @@
-package kr.hooked.api.security.controller;
+package kr.hooked.api.controller;
 
 import jakarta.validation.Valid;
-import kr.hooked.api.security.dto.TokenDto;
-import kr.hooked.api.security.service.APIRefreshService;
+import kr.hooked.api.dto.TokenDto;
+import kr.hooked.api.service.APIRefreshService;
 import kr.hooked.api.util.ValidCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

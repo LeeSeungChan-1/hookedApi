@@ -1,12 +1,12 @@
-package kr.hooked.api.security.filter;
+package kr.hooked.api.filter;
 
 import com.google.gson.Gson;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.hooked.api.security.dto.EmployeeSecurityDto;
-import kr.hooked.api.security.util.JWTUtil;
+import kr.hooked.api.dto.EmployeeSecurityDto;
+import kr.hooked.api.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,28 +23,28 @@ public class JWTCheckFilter extends OncePerRequestFilter { // OncePerRequestFilt
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException { // 검사하지 않는 경우
-        // false : 검사 o // true : 검사 x
-        if(request.getMethod().equals("OPTIONS")){// Preflight요청은 체크하지 않음
-            return true;
-        }
-
-        String path = request.getRequestURI(); // 요청 경로 가져오기
-
-        if(path.startsWith("/api/employee/login")) { // 로그인 경로의 호출은 체크하지 않음
-            return true;
-        }
-
-        if(path.startsWith("/api/employee/")) { // 회원가입 경로의 호출은 체크하지 않음
-            return true;
-        }
-
-        if(path.startsWith("/api/token/refresh")) { // 토큰 재발급 호출은 체크하지 않음
-            return true;
-        }
-
-        if(path.startsWith("/actuator")) { // 상태 검사 주소는 체크하지 않음
-            return true;
-        }
+//        // false : 검사 o // true : 검사 x
+//        if(request.getMethod().equals("OPTIONS")){// Preflight요청은 체크하지 않음
+//            return true;
+//        }
+//
+//        String path = request.getRequestURI(); // 요청 경로 가져오기
+//
+//        if(path.startsWith("/api/employee/login")) { // 로그인 경로의 호출은 체크하지 않음
+//            return true;
+//        }
+//
+//        if(path.startsWith("/api/employee/")) { // 회원가입 경로의 호출은 체크하지 않음
+//            return true;
+//        }
+//
+//        if(path.startsWith("/api/token/refresh")) { // 토큰 재발급 호출은 체크하지 않음
+//            return true;
+//        }
+//
+//        if(path.startsWith("/actuator")) { // 상태 검사 주소는 체크하지 않음
+//            return true;
+//        }
 
         return false;
     }

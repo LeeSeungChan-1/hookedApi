@@ -1,4 +1,4 @@
-package kr.hooked.api.security.dto;
+package kr.hooked.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

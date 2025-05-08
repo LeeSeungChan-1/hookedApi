@@ -1,13 +1,12 @@
-package kr.hooked.api.security.service;
+package kr.hooked.api.service;
 
-import kr.hooked.api.security.dto.TokenDto;
-import kr.hooked.api.security.util.CustomJWTException;
-import kr.hooked.api.security.util.JWTUtil;
+import kr.hooked.api.dto.TokenDto;
+import kr.hooked.api.util.CustomJWTException;
+import kr.hooked.api.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service

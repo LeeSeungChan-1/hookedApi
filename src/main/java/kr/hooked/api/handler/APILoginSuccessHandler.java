@@ -1,11 +1,11 @@
-package kr.hooked.api.security.handler;
+package kr.hooked.api.handler;
 
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kr.hooked.api.security.dto.EmployeeSecurityDto;
-import kr.hooked.api.security.util.JWTUtil;
+import kr.hooked.api.dto.EmployeeSecurityDto;
+import kr.hooked.api.util.JWTUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;

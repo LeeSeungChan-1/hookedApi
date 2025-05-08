@@ -1,7 +1,7 @@
-package kr.hooked.api.security.service;
+package kr.hooked.api.service;
 
 import jakarta.transaction.Transactional;
-import kr.hooked.api.security.dto.EmployeeSecurityDto;
+import kr.hooked.api.dto.EmployeeSecurityDto;
 import kr.hooked.api.entity.Employee;
 import kr.hooked.api.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;

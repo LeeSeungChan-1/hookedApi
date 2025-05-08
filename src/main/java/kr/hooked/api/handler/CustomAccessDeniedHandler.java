@@ -1,4 +1,4 @@
-package kr.hooked.api.security.handler;
+package kr.hooked.api.handler;
 
 import com.google.gson.Gson;
 import jakarta.servlet.ServletException;
