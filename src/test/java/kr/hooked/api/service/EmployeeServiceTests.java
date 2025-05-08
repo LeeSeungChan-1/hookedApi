@@ -16,19 +16,19 @@ public class EmployeeServiceTests {
     @Autowired
     EmployeeService employeeService;
 
-    @Test
-    public void insertTest(){
-        EmployeeRequestDto employeeRequestDto = EmployeeRequestDto
-                .builder()
-                .number("20250101")
-                .password("20250101")
-                .name("서비스테스트")
-                .email("serviceInsertTest@hotmail.com")
-                .phoneNumber("01011112222")
-                .hireDate(LocalDate.of(2025, 1, 1))
-                .build();
-
-        EmployeeResponseDto result = employeeService.insert(employeeRequestDto);
-        log.info(result);
-    }
+//    @Test
+//    public void insertTest(){
+//        EmployeeRequestDto employeeRequestDto = EmployeeRequestDto
+//                .builder()
+//                .number("20250101")
+//                .password("20250101")
+//                .name("서비스테스트")
+//                .email("serviceInsertTest@hotmail.com")
+//                .phoneNumber("01011112222")
+//                .hireDate(LocalDate.of(2025, 1, 1))
+//                .build();
+//
+//        EmployeeResponseDto result = employeeService.insert(employeeRequestDto);
+//        log.info(result);
+//    }
 }

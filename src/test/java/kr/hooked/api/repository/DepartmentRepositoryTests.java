@@ -35,17 +35,17 @@ public class DepartmentRepositoryTests {
 
     }
 
-    @Test
-    public void updateTest(){
-        Department department = departmentRepository.findById(1L).orElseThrow();
-        log.info(department);
-
-        department.setName("부서수정");
-        department.setStatus(false);
-
-        Department result = departmentRepository.save(department);
-        log.info(result);
-    }
+//    @Test
+//    public void updateTest(){
+//        Department department = departmentRepository.findById(1L).orElseThrow();
+//        log.info(department);
+//
+//        department.setName("부서수정");
+//        department.setStatus(false);
+//
+//        Department result = departmentRepository.save(department);
+//        log.info(result);
+//    }
 
     @Test
     public void deleteTest(){

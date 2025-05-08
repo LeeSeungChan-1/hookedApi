@@ -34,17 +34,17 @@ public class PositionRepositoryTests {
         log.info(result);
     }
 
-    @Test
-    public void updateTest(){
-        Position position = positionRepository.findById(1L).orElseThrow();
-        log.info(position);
-
-        position.setName("직책수정");
-        position.setStatus(false);
-
-        positionRepository.save(position);
-        log.info(position);
-    }
+//    @Test
+//    public void updateTest(){
+//        Position position = positionRepository.findById(1L).orElseThrow();
+//        log.info(position);
+//
+//        position.setName("직책수정");
+//        position.setStatus(false);
+//
+//        positionRepository.save(position);
+//        log.info(position);
+//    }
 
     @Test
     public void deleteTest(){

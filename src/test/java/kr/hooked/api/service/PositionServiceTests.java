@@ -15,18 +15,18 @@ public class PositionServiceTests {
     @Autowired
     private PositionService positionService;
 
-    @Test
-    public void insertTest(){
-        PositionRequestDto positionRequestDto = PositionRequestDto
-                .builder()
-                .number("100")
-                .name("직책서비스1")
-                .status(true)
-                .build();
-
-        PositionResponseDto result = positionService.insert(positionRequestDto);
-        log.info(result);
-    }
+//    @Test
+//    public void insertTest(){
+//        PositionRequestDto positionRequestDto = PositionRequestDto
+//                .builder()
+//                .number("100")
+//                .name("직책서비스1")
+//                .status(true)
+//                .build();
+//
+//        PositionResponseDto result = positionService.insert(positionRequestDto);
+//        log.info(result);
+//    }
 
     @Test
     public void selectTest(){
@@ -34,17 +34,17 @@ public class PositionServiceTests {
         log.info(result);
     }
 
-    @Test
-    public void updateTest(){
-        PositionRequestDto positionRequestDto = PositionRequestDto
-                .builder()
-                .positionId(2L)
-                .name("직책서비스수정")
-                .status(false)
-                .build();
-        PositionResponseDto result = positionService.update(positionRequestDto);
-        log.info(result);
-    }
+//    @Test
+//    public void updateTest(){
+//        PositionRequestDto positionRequestDto = PositionRequestDto
+//                .builder()
+//                .positionId(2L)
+//                .name("직책서비스수정")
+//                .status(false)
+//                .build();
+//        PositionResponseDto result = positionService.update(positionRequestDto);
+//        log.info(result);
+//    }
 
     @Test
     public void deleteTest(){

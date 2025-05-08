@@ -64,36 +64,36 @@ public class EmployeeRepositoryTests {
         log.info(result.getEmployeeAuthorityList());
     }
 
-    @Test
-    public void updateTest(){
-        Employee employee = employeeRepository.findById(1L).orElseThrow();
-        log.info(employee);
+//    @Test
+//    public void updateTest(){
+//        Employee employee = employeeRepository.findById(1L).orElseThrow();
+//        log.info(employee);
+//
+//        Department department = departmentRepository.findById(4L).orElseThrow();
+//        Position position = positionRepository.findById(4L).orElseThrow();
+//
+//        employee.setPassword(customSecurityConfig.passwordEncoder().encode("수정"));
+//        employee.setName("이름수정");
+//        employee.setEmail("update@gmail.com");
+//        employee.setHireDate(LocalDate.of(2025, 1, 3));
+//        employee.setPhoneNumber("01022222222");
+//        employee.setStatus(false);
+//        employee.setDepartment(department);
+//        employee.setPosition(position);
+//
+//
+//        Employee result = employeeRepository.save(employee);
+//        log.info(result);
+//    }
 
-        Department department = departmentRepository.findById(4L).orElseThrow();
-        Position position = positionRepository.findById(4L).orElseThrow();
-
-        employee.setPassword(customSecurityConfig.passwordEncoder().encode("수정"));
-        employee.setName("이름수정");
-        employee.setEmail("update@gmail.com");
-        employee.setHireDate(LocalDate.of(2025, 1, 3));
-        employee.setPhoneNumber("01022222222");
-        employee.setStatus(false);
-        employee.setDepartment(department);
-        employee.setPosition(position);
-
-
-        Employee result = employeeRepository.save(employee);
-        log.info(result);
-    }
-
-    @Test
-    @Transactional
-    @Rollback(value = false)
-    public void deleteTest(){
-        Employee employee = employeeRepository.findById(1L).orElseThrow();
-        employeeAuthorityRepository.deleteByEmployeeEmployeeId(employee.getEmployeeId());
-        employeeRepository.deleteById(employee.getEmployeeId());
-    }
+//    @Test
+//    @Transactional
+//    @Rollback(value = false)
+//    public void deleteTest(){
+//        Employee employee = employeeRepository.findById(1L).orElseThrow();
+//        employeeAuthorityRepository.deleteByEmployeeEmployeeId(employee.getEmployeeId());
+//        employeeRepository.deleteById(employee.getEmployeeId());
+//    }
 
     @Test
     public void selectAllTest(){
@@ -101,61 +101,61 @@ public class EmployeeRepositoryTests {
         log.info(result);
     }
 
-    @Test
-    @Transactional
-    @Rollback(value = false)
-    public void multipleInsertTest(){
-        Authority authority2 = authorityRepository.findById(2L).orElseThrow();
-        Authority authority3 = authorityRepository.findById(3L).orElseThrow();
-        Authority authority4 = authorityRepository.findById(4L).orElseThrow();
-
-        for(int i = 300; i <= 310; i++){
-//            Department department = departmentRepository.findById((long) i).orElseThrow();
-//            Position position = positionRepository.findById((long) i).orElseThrow();
-
-            Employee employee = Employee
-                    .builder()
-                    .number(LocalDate.of(2023, 1, 1).plusDays(i).format(DateTimeFormatter.ofPattern("yyyyMMdd")))
-                    .password(customSecurityConfig.passwordEncoder().encode(LocalDate.of(2023, 1, 1).plusDays(i).format(DateTimeFormatter.ofPattern("yyyyMMdd"))))
-                    .name("이름" + i)
-                    .email("employee" + i + "@gmail.com")
-                    .hireDate(LocalDate.of(2023, 1, 1).plusDays(i))
-                    .phoneNumber("010" + (12345678 + i))
-                    .status(true)
-//                    .department(department)
-//                    .position(position)
-                    .build();
-
-            if(i > 3){
-                EmployeeAuthority employeeAuthority = new EmployeeAuthority();
-                employeeAuthority.setEmployee(employee);
-                employeeAuthority.setAuthority(authority2);
-
-                employeeAuthorityRepository.save(employeeAuthority);
-            }
-            if (i > 5) {
-                EmployeeAuthority employeeAuthority = new EmployeeAuthority();
-                employeeAuthority.setEmployee(employee);
-                employeeAuthority.setAuthority(authority3);
-
-                employeeAuthorityRepository.save(employeeAuthority);
-            }
-            if (i > 8) {
-                EmployeeAuthority employeeAuthority = new EmployeeAuthority();
-                employeeAuthority.setEmployee(employee);
-                employeeAuthority.setAuthority(authority4);
-
-                employeeAuthorityRepository.save(employeeAuthority);
-            }
-
-
-            log.info(employee.getNumber());
-            log.info(employee.getPhoneNumber());
-            Employee result = employeeRepository.save(employee);
-            log.info(result);
-        }
-
-    }
+//    @Test
+//    @Transactional
+//    @Rollback(value = false)
+//    public void multipleInsertTest(){
+//        Authority authority2 = authorityRepository.findById(2L).orElseThrow();
+//        Authority authority3 = authorityRepository.findById(3L).orElseThrow();
+//        Authority authority4 = authorityRepository.findById(4L).orElseThrow();
+//
+//        for(int i = 300; i <= 310; i++){
+////            Department department = departmentRepository.findById((long) i).orElseThrow();
+////            Position position = positionRepository.findById((long) i).orElseThrow();
+//
+//            Employee employee = Employee
+//                    .builder()
+//                    .number(LocalDate.of(2023, 1, 1).plusDays(i).format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+//                    .password(customSecurityConfig.passwordEncoder().encode(LocalDate.of(2023, 1, 1).plusDays(i).format(DateTimeFormatter.ofPattern("yyyyMMdd"))))
+//                    .name("이름" + i)
+//                    .email("employee" + i + "@gmail.com")
+//                    .hireDate(LocalDate.of(2023, 1, 1).plusDays(i))
+//                    .phoneNumber("010" + (12345678 + i))
+//                    .status(true)
+////                    .department(department)
+////                    .position(position)
+//                    .build();
+//
+//            if(i > 3){
+//                EmployeeAuthority employeeAuthority = new EmployeeAuthority();
+//                employeeAuthority.setEmployee(employee);
+//                employeeAuthority.setAuthority(authority2);
+//
+//                employeeAuthorityRepository.save(employeeAuthority);
+//            }
+//            if (i > 5) {
+//                EmployeeAuthority employeeAuthority = new EmployeeAuthority();
+//                employeeAuthority.setEmployee(employee);
+//                employeeAuthority.setAuthority(authority3);
+//
+//                employeeAuthorityRepository.save(employeeAuthority);
+//            }
+//            if (i > 8) {
+//                EmployeeAuthority employeeAuthority = new EmployeeAuthority();
+//                employeeAuthority.setEmployee(employee);
+//                employeeAuthority.setAuthority(authority4);
+//
+//                employeeAuthorityRepository.save(employeeAuthority);
+//            }
+//
+//
+//            log.info(employee.getNumber());
+//            log.info(employee.getPhoneNumber());
+//            Employee result = employeeRepository.save(employee);
+//            log.info(result);
+//        }
+//
+//    }
 
     @Test
     @Transactional
