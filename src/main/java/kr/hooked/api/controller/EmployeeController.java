@@ -26,6 +26,7 @@ public class EmployeeController {
 
     @PostMapping("/")
     public ResponseEntity<?> insert(@Valid EmployeeRequestDto employeeRequestDto) {
+        log.info(employeeRequestDto);
         EmployeeResponseDto result = employeeService.insert(employeeRequestDto);
 
         return ResponseEntity.ok(result);
