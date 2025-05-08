@@ -22,11 +22,11 @@ public class APIRefreshController {
 
     @PostMapping("/api/token/refresh")
     public ResponseEntity<?> refreshAccessToken(@Valid TokenDto tokenDto, BindingResult bindingResult) {
-        Map<String, String> validResult = ValidCheck.validCheck(bindingResult); // 입력값 검증
-
-        if(!validResult.isEmpty()) { // 입력값에 문제가 있을 경우
-            return ResponseEntity.badRequest().body(validResult);
-        }
+//        Map<String, String> validResult = ValidCheck.validCheck(bindingResult); // 입력값 검증
+//
+//        if(!validResult.isEmpty()) { // 입력값에 문제가 있을 경우
+//            return ResponseEntity.badRequest().body(validResult);
+//        }
 
         Map<String, String> result = apiRefreshService.refreshAccessToken(tokenDto);
 

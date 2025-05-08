@@ -1,48 +1,51 @@
 package kr.hooked.api.handler;
 
-import kr.hooked.api.util.CustomJWTException;
-import kr.hooked.api.util.ValidCheck;
-import org.springframework.dao.DataIntegrityViolationException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    // 컬렉션이나 옵셔널에서 요소를 찾을 수 없을 때
-    @ExceptionHandler(NoSuchElementException.class)
-    public ResponseEntity<Map<String, String>> noSuchElementException(NoSuchElementException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
-    }
-//    // @valid 검증에 실패 했을 때
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException e) {
-        Map<String, String> errors = ValidCheck.validCheck(e.getBindingResult()); // @Valid 를 통한 입력값 검증
-        return ResponseEntity.badRequest().body(errors);
-    }
-    //
-//    @ExceptionHandler(ResponseStatusException.class)
-//    public ResponseEntity<?> responseStatusException(ResponseStatusException e) {
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
-//    }
-    // 요청 본문을 전송하지 않았을 때
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<Map<String, String>> httpMessageNotReadableException(HttpMessageNotReadableException e) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
-    }
-    // jwt 토큰에 오류가 있을 때
-    @ExceptionHandler(CustomJWTException.class)
-    protected ResponseEntity<Map<String, String>> customJWTException(CustomJWTException e) {
-        return ResponseEntity.status(HttpStatus.OK).body(Map.of("error", e.getMessage()));
-    }
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, String>> dataIntegrityViolationException(DataIntegrityViolationException e) { // 중복된 데이터 저장 시
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+
+    // 1) ResponseStatusException 처리 (e.g. 404 NOT_FOUND)
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", ex.getStatusCode().value());
+        body.put("error", ((HttpStatus) ex.getStatusCode()).getReasonPhrase());
+        body.put("message", ex.getReason());
+        return ResponseEntity.status(ex.getStatusCode()).body(body);
     }
 
+    // 2) @Valid 검증 실패 처리 (400 BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        body.put("validationErrors", errors);
+        return ResponseEntity.badRequest().body(body);
+    }
+
+    // 3) 기타 예외 (500 INTERNAL_SERVER_ERROR)
+    // @ExceptionHandler(Exception.class)
+    // public ResponseEntity<Map<String,Object>> handleAll(Exception ex) {
+    // Map<String,Object> body = new HashMap<>();
+    // body.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+    // body.put("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+    // body.put("message", "알 수 없는 서버 오류가 발생했습니다.");
+    // // 필요한 경우 ex.getMessage() 또는 스택트레이스 로깅
+    // return ResponseEntity
+    // .status(HttpStatus.INTERNAL_SERVER_ERROR)
+    // .body(body);
+    // }
 }
