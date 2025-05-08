@@ -24,7 +24,6 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    @PreAuthorize("hasAnyRole('ROLE_dvAll')")
     @PostMapping("/")
     public ResponseEntity<?> insert(@Valid EmployeeRequestDto employeeRequestDto) {
         EmployeeResponseDto result = employeeService.insert(employeeRequestDto);
