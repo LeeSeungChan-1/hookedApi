@@ -49,7 +49,7 @@ public class CustomSecurityConfig {
                 // 인증 없이 접근 허용할 엔드포인트
                 .requestMatchers(
                         "/api/employee/login",
-                        "/api/employee/signup",
+                        "/api/employee/",
                         "/api/token/refresh",
                         "/actuator/health",
                         "/swagger-ui/**", // Swagger UI 정적 리소스(HTML, JS, CSS 등)가 매핑되는 경로
