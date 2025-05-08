@@ -35,6 +35,7 @@ public class JWTCheckFilter extends OncePerRequestFilter { // OncePerRequestFilt
 //        }
 //
         if(path.startsWith("/api/employee/")) { // 회원가입 경로의 호출은 체크하지 않음
+            log.info(path);
             return true;
         }
 //
