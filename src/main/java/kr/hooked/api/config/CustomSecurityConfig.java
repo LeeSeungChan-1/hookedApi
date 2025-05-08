@@ -48,6 +48,7 @@ public class CustomSecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // 인증 없이 접근 허용할 엔드포인트
                 .requestMatchers(
+                        "/error",
                         "/api/employee/login",
                         "/api/employee/",
                         "/api/token/refresh",
