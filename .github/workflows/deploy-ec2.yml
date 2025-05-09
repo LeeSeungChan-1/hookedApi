@@ -13,6 +13,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      - name: Grant execute permission for Gradle wrapper
+        run: chmod +x gradlew
+
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
@@ -40,18 +43,18 @@ jobs:
           script: |
             cd /home/ubuntu/hooked-api
 
-            # 최초 배포 시
+            # 최초 배포 시 Git 설정
             if [ ! -d .git ]; then
               git init
               git remote add origin https://github.com/LeeSeungChan-1/hookedApi.git
             fi
 
-            # 최신 커밋으로 동기화
-            git fetch origin main
+            # 최신 커밋 동기화
+            git fetch origin master
             git reset --hard origin/master
 
             # 환경 파일 설정
-            cp .env
+            cp .env.production .env
 
             # 애플리케이션 재시작
             pkill -f 'hooked-api' || true
