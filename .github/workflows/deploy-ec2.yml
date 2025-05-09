@@ -28,9 +28,9 @@ jobs:
       - name: Copy Jar to EC2
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.EC2_HOST }}   # 도메인 또는 Elastic IP
+          host: ${{ secrets.EC2_HOST }}
           username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }} # 전체 PEM 블록
+          key: ${{ secrets.EC2_SSH_KEY }}
           source: build/libs/*.jar
           target: /home/ubuntu/hooked-api/
 
@@ -53,10 +53,9 @@ jobs:
             git fetch origin master
             git reset --hard origin/master
 
-            # 환경 파일 설정
-            cp .env
+            # 환경 파일은 서버에서 별도로 관리합니다
+            echo "[INFO] Using server-managed .env, skipping copy"
 
             # 애플리케이션 재시작
             pkill -f 'hooked-api' || true
             nohup java -jar *.jar --spring.profiles.active=production > hooked-api.log 2>&1 &
-
