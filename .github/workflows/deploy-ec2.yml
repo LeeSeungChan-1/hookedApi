@@ -47,25 +47,38 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
           chmod 600 key.pem
 
-      # 7) 직접 ssh 로 배포 스크립트 실행 (echo로 .env 작성)
+      # 7) 직접 ssh 로 배포 스크립트 실행 (.env 생성 및 build/libs에서 실행)
       - name: Deploy on EC2 via ssh
         run: |
           ssh -o StrictHostKeyChecking=no \
               -i key.pem \
               -p ${{ secrets.EC2_SSH_PORT }} \
               ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            # 1) 루트 디렉터리로 이동
             cd /home/${{ secrets.EC2_USER }}/hookedApi
-
-            # 1) .env 파일을 한 줄씩 작성
-            echo "DB_URL=${{ secrets.DB_URL }}"     > .env
-            echo "DB_PORT=${{ secrets.DB_PORT }}"   >> .env
-            echo "DB_NAME=${{ secrets.DB_NAME }}"   >> .env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
 
             # 2) 기존 프로세스 종료
             pkill -f 'hookedApi.*\.jar' || true
 
-            # 3) 새 JAR 백그라운드 실행
-            nohup java -jar *.jar > app.log 2>&1 &
+            # 3) build/libs로 이동
+            cd build/libs
+
+            # 4) .env 파일을 이곳에 생성
+            echo "DB_URL=${{ secrets.DB_URL }}"       > .env
+            echo "DB_PORT=${{ secrets.DB_PORT }}"     >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}"     >> .env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+
+            # 5) JAR 파일 찾기
+            JAR_FILE=$(ls *.jar | head -n 1)
+            if [ -z "$JAR_FILE" ]; then
+              echo "ERROR: No JAR file found in $(pwd)"
+              exit 1
+            fi
+            echo "Starting $JAR_FILE ..."
+
+            # 6) 백그라운드로 실행 (로그는 루트의 app.log로)
+            nohup java -jar "$JAR_FILE" > ../app.log 2>&1 &
+
           EOF
