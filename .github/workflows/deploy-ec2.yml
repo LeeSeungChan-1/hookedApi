@@ -47,28 +47,25 @@ jobs:
           echo "${{ secrets.EC2_SSH_KEY }}" > key.pem
           chmod 600 key.pem
 
-      # 7) 직접 ssh 로 배포 스크립트 실행
+      # 7) 직접 ssh 로 배포 스크립트 실행 (echo로 .env 작성)
       - name: Deploy on EC2 via ssh
         run: |
           ssh -o StrictHostKeyChecking=no \
               -i key.pem \
               -p ${{ secrets.EC2_SSH_PORT }} \
               ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          
             cd /home/${{ secrets.EC2_USER }}/hookedApi
 
-            # .env 생성
-            cat > .env <<EOV
-            DB_URL=${{ secrets.DB_URL }}
-            DB_PORT=${{ secrets.DB_PORT }}
-            DB_NAME=${{ secrets.DB_NAME }}
-            DB_USERNAME=${{ secrets.DB_USERNAME }}
-            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            EOV
+            # 1) .env 파일을 한 줄씩 작성
+            echo "DB_URL=${{ secrets.DB_URL }}"     > .env
+            echo "DB_PORT=${{ secrets.DB_PORT }}"   >> .env
+            echo "DB_NAME=${{ secrets.DB_NAME }}"   >> .env
+            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
 
-            # 기존 프로세스 종료
+            # 2) 기존 프로세스 종료
             pkill -f 'hookedApi.*\.jar' || true
 
-            # 새 JAR 백그라운드 실행
+            # 3) 새 JAR 백그라운드 실행
             nohup java -jar *.jar > app.log 2>&1 &
           EOF
