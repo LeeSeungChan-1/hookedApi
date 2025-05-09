@@ -41,21 +41,15 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Ensure deployment directory exists
+            mkdir -p /home/ubuntu/hooked-api
             cd /home/ubuntu/hooked-api
 
-            # 최초 배포 시 Git 설정
-            if [ ! -d .git ]; then
-              git init
-              git remote add origin https://github.com/LeeSeungChan-1/hookedApi.git
-            fi
+            # Clean up old JARs
+            rm -f *.jar
 
-            # 최신 커밋 동기화
-            git fetch origin master
-            git reset --hard origin/master
+            # Move new JAR into place (if scp didn't overwrite existing files)
+            mv *.jar hooked-api.jar || true
 
-            # 환경 파일은 서버에서 별도로 관리합니다
-            echo "[INFO] Using server-managed .env, skipping copy"
-
-            # 애플리케이션 재시작
-            pkill -f 'hooked-api' || true
-            nohup java -jar *.jar --spring.profiles.active=production > hooked-api.log 2>&1 &
+            # Start new JAR in background, logs to file
+            nohup java -jar hooked-api.jar --spring.profiles.active=production > hooked-api.log 2>&1 &
