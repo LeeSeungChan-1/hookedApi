@@ -33,7 +33,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: build/libs/*.jar
           target: /home/ubuntu/hooked-api/
-          strip: 2
+          strip_components: 2  # Removes the leading build/libs path components
 
       - name: Execute Remote Commands
         uses: appleboy/ssh-action@master
@@ -46,7 +46,7 @@ jobs:
             mkdir -p /home/ubuntu/hooked-api
             cd /home/ubuntu/hooked-api
 
-            # Remove old JARs
+            # Clean up old JARs
             rm -f *.jar
 
             # Rename the new JAR to a consistent name
@@ -54,5 +54,5 @@ jobs:
               mv *.jar hooked-api.jar
             fi
 
-            # Start the application
+            # Start the application in the background
             nohup java -jar hooked-api.jar --spring.profiles.active=production > hooked-api.log 2>&1 &
