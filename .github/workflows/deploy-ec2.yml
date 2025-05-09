@@ -11,21 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1) 리포지토리 체크아웃
       - name: Checkout hookedApi
         uses: actions/checkout@v3
 
+      # 2) JDK 21 설치
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: '21'
 
+      # 3) Gradle wrapper에 실행 권한 부여
       - name: Grant execute permission to Gradle wrapper
         run: chmod +x ./gradlew
 
+      # 4) Gradle clean & bootJar 빌드
       - name: Build with Gradle
         run: ./gradlew clean bootJar --no-daemon
 
+      # 5) 빌드된 JAR을 EC2로 복사
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@v1.0.0
         with:
@@ -36,6 +41,7 @@ jobs:
           source: build/libs/*.jar
           target: /home/${{ secrets.EC2_USER }}/hookedApi/
 
+      # 6) EC2에서 .env 생성 → 애플리케이션 재시작
       - name: Restart hookedApi on EC2
         uses: appleboy/ssh-action@v1.2.2
         with:
@@ -43,8 +49,13 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_SSH_PORT }}
+          timeout: 60s           # SSH 연결 타임아웃 (기본 30초 → 60초로 연장)
+          command_timeout: 20m   # 스크립트 실행 타임아웃 (기본 10분 → 20분으로 연장)
           script: |
+            # 1) 배포 디렉터리로 이동
             cd /home/${{ secrets.EC2_USER }}/hookedApi
+
+            # 2) .env 파일 동적 생성 (GitHub Secrets 기반)
             cat > .env <<EOF
             DB_URL=${{ secrets.DB_URL }}
             DB_PORT=${{ secrets.DB_PORT }}
@@ -52,5 +63,10 @@ jobs:
             DB_USERNAME=${{ secrets.DB_USERNAME }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             EOF
+
+            # 3) 이전 Java 프로세스 종료 (hookedApi*.jar 패턴)
             pkill -f 'hookedApi.*\.jar' || true
+
+            # 4) 새 JAR 백그라운드 실행 (nohup + 로그 기록)
             nohup java -jar *.jar > app.log 2>&1 &
+
