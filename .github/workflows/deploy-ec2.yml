@@ -59,3 +59,4 @@ jobs:
             # 애플리케이션 재시작
             pkill -f 'hooked-api' || true
             nohup java -jar *.jar --spring.profiles.active=production > hooked-api.log 2>&1 &
+
