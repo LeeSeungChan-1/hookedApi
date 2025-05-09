@@ -41,21 +41,18 @@ jobs:
           source: build/libs/*.jar
           target: /home/${{ secrets.EC2_USER }}/hookedApi/
 
-      # 6) EC2에서 .env 생성 → 애플리케이션 재시작
-      - name: Restart hookedApi on EC2
+      # 6a) EC2에서 .env 생성 및 기존 프로세스 종료
+      - name: Prepare env and stop old process
         uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_SSH_PORT }}
-          timeout: 60s           # SSH 연결 타임아웃 (기본 30초 → 60초로 연장)
-          command_timeout: 20m   # 스크립트 실행 타임아웃 (기본 10분 → 20분으로 연장)
+          timeout: 60s
+          command_timeout: 2m
           script: |
-            # 1) 배포 디렉터리로 이동
             cd /home/${{ secrets.EC2_USER }}/hookedApi
-
-            # 2) .env 파일 동적 생성 (GitHub Secrets 기반)
             cat > .env <<EOF
             DB_URL=${{ secrets.DB_URL }}
             DB_PORT=${{ secrets.DB_PORT }}
@@ -63,10 +60,19 @@ jobs:
             DB_USERNAME=${{ secrets.DB_USERNAME }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             EOF
-
-            # 3) 이전 Java 프로세스 종료 (hookedApi*.jar 패턴)
             pkill -f 'hookedApi.*\.jar' || true
 
-            # 4) 새 JAR 백그라운드 실행 (nohup + 로그 기록)
+      # 6b) EC2에서 새 JAR 백그라운드 실행
+      - name: Start new hookedApi process
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+          timeout: 60s
+          command_timeout: 2m
+          script: |
+            cd /home/${{ secrets.EC2_USER }}/hookedApi
             nohup java -jar *.jar > app.log 2>&1 &
 
