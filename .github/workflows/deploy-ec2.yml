@@ -62,17 +62,8 @@ jobs:
 
             # 3) build/libs로 이동
             cd build/libs
-          
-            pwd
 
-            # 4) .env 파일을 이곳에 생성
-            echo "DB_URL=${{ secrets.DB_URL }}"       > .env
-            echo "DB_PORT=${{ secrets.DB_PORT }}"     >> .env
-            echo "DB_NAME=${{ secrets.DB_NAME }}"     >> .env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-
-            # 5) JAR 파일 찾기
+            # 4) JAR 파일 찾기
             JAR_FILE=$(ls *.jar | head -n 1)
             if [ -z "$JAR_FILE" ]; then
               echo "ERROR: No JAR file found in $(pwd)"
@@ -80,7 +71,7 @@ jobs:
             fi
             echo "Starting $JAR_FILE ..."
 
-            # 6) 백그라운드로 실행 (로그는 루트의 app.log로)
+            # 5) 백그라운드로 실행 (로그는 루트의 app.log로)
             nohup java -jar "$JAR_FILE" > ../app.log 2>&1 &
 
           EOF
