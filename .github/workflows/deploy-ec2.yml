@@ -62,6 +62,8 @@ jobs:
 
             # 3) build/libs로 이동
             cd build/libs
+          
+            pwd
 
             # 4) .env 파일을 이곳에 생성
             echo "DB_URL=${{ secrets.DB_URL }}"       > .env
